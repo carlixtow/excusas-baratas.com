@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excusas Baratas</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            text-align: center;
+            background: linear-gradient(45deg, #222, #444);
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            margin-top: 50px;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        h1 {
+            font-size: 3em;
+            color: #ffcc00;
+            text-shadow: 3px 3px 5px black;
+        }
+        button {
+            background: linear-gradient(45deg, #ffcc00, #ffaa00);
+            color: #222;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.5em;
+            cursor: pointer;
+            border-radius: 10px;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
+            transition: 0.3s;
+        }
+        button:hover {
+            background: linear-gradient(45deg, #ffaa00, #ff8800);
+            transform: scale(1.1);
+        }
+        .excusa, .juego {
+            margin-top: 20px;
+            font-size: 1.5em;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
+        }
+        .opciones button {
+            display: block;
+            margin: 10px auto;
+        }
+        .diploma {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            color: black;
+            font-size: 1.5em;
+            border-radius: 10px;
+            box-shadow: 5px 5px 15px rgba(255, 255, 255, 0.3);
+            border: 5px solid gold;
+            text-align: center;
+            font-family: 'Times New Roman', serif;
+            width: 80%;
+            margin: auto;
+        }
+        .diploma h2 {
+            font-size: 2em;
+            color: gold;
+            text-shadow: 2px 2px 4px black;
+        }
+        .diploma p {
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Estas En ExcusasBaratas.com</h1>
+        <button onclick="generarExcusa()">Dame una excusa</button>
+        <p class="excusa" id="excusa">Presiona el botón para obtener una excusa.</p>
+    </div>
+    
+    <div class="container juego">
+        <h2>Adivina la Excusa</h2>
+        <p>Elige la excusa correcta para esta situación:</p>
+        <p id="situacion"></p>
+        <div class="opciones" id="opciones"></div>
+        <p id="resultado"></p>
+        <div class="diploma" id="diploma">
+            <h2>🎓 Diploma de Excusas Baratas 🎓</h2>
+            <p>Se otorga el presente reconocimiento a:</p>
+            <p><strong>[Tu Nombre Aquí]</strong></p>
+            <p>Por su habilidad excepcional en el arte de dar excusas.</p>
+            <p><em>Otorgado el [Fecha]</em></p>
+        </div>
+    </div>
+    
+    <script>
+        const excusas = [
+            "Mi perro se comió la tarea.",
+            "Se fue la luz y no pude hacerlo.",
+            "No escuché la alarma y me quedé dormido.",
+            "Mi computadora explotó y perdí todo.",
+            "Tenía un compromiso familiar urgente.",
+            "Pensé que era para la próxima semana.",
+            "El tráfico estaba imposible, no llegué a tiempo.",
+            "Se cayó el Internet justo cuando iba a enviarlo.",
+            "Mi abuela me hizo quedarme en su casa todo el día.",
+            "Mi vecino se robó mi cargador y no pude encender mi laptop."
+        ];
+
+        const situaciones = [
+            { pregunta: "¿Por qué no hiciste la tarea?", respuesta: "Mi perro se comió la tarea." },
+            { pregunta: "¿Por qué llegaste tarde al trabajo?", respuesta: "El tráfico estaba imposible, no llegué a tiempo." },
+            { pregunta: "¿Por qué no enviaste el correo?", respuesta: "Se cayó el Internet justo cuando iba a enviarlo." },
+            { pregunta: "¿Por qué no viniste a la reunión?", respuesta: "Tenía un compromiso familiar urgente." }
+        ];
+
+        let aciertos = 0;
+        let intentos = 0;
+
+        function generarExcusa() {
+            let indice = Math.floor(Math.random() * excusas.length);
+            document.getElementById("excusa").textContent = excusas[indice];
+        }
+
+        function iniciarJuego() {
+            if (intentos >= 4) {
+                if (aciertos >= 3) {
+                    document.getElementById("diploma").style.display = "block";
+                } else {
+                    document.getElementById("resultado").textContent = "Intenta nuevamente para conseguir el diploma.";
+                }
+                aciertos = 0;
+                intentos = 0;
+            }
+
+            let situacionAleatoria = situaciones[Math.floor(Math.random() * situaciones.length)];
+            document.getElementById("situacion").textContent = situacionAleatoria.pregunta;
+            let opciones = document.getElementById("opciones");
+            opciones.innerHTML = "";
+
+            let opcionesMezcladas = [...excusas].sort(() => 0.5 - Math.random()).slice(0, 3);
+            if (!opcionesMezcladas.includes(situacionAleatoria.respuesta)) {
+                opcionesMezcladas[Math.floor(Math.random() * 3)] = situacionAleatoria.respuesta;
+            }
+
+            opcionesMezcladas.forEach(excusa => {
+                let boton = document.createElement("button");
+                boton.textContent = excusa;
+                boton.onclick = () => verificarRespuesta(excusa, situacionAleatoria.respuesta);
+                opciones.appendChild(boton);
+            });
+        }
+
+        function verificarRespuesta(seleccion, correcta) {
+            let resultado = document.getElementById("resultado");
+            intentos++;
+            if (seleccion === correcta) {
+                resultado.textContent = "¡Correcto! Esa es la mejor excusa.";
+                resultado.style.color = "#00ff00";
+                aciertos++;
+            } else {
+                resultado.textContent = "Incorrecto. Intenta de nuevo.";
+                resultado.style.color = "#ff0000";
+            }
+            setTimeout(iniciarJuego, 2000);
+        }
+
+        iniciarJuego();
+    </script>
+</body>
+</html>
